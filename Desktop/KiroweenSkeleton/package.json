@@ -1,0 +1,37 @@
+{
+  "name": "kiroween-skeleton",
+  "version": "1.0.0",
+  "description": "Full-stack dual-application productivity platform with Smart Notes and Daily Task Manager",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "shared/*"
+  ],
+  "scripts": {
+    "dev": "npm run dev --workspace=apps/notes-app & npm run dev --workspace=apps/tasks-app",
+    "build": "npm run build --workspaces",
+    "test": "npm run test --workspaces",
+    "test:properties": "npm run test:properties --workspaces",
+    "test:integration": "npm run test:integration --workspaces",
+    "deploy:infra": "npm run deploy --workspace=infra",
+    "deploy:backend": "npm run deploy --workspace=backend",
+    "deploy:frontend": "npm run build && aws s3 sync dist/ s3://kiroween-skeleton-frontend",
+    "lint": "eslint . --ext .ts,.tsx",
+    "format": "prettier --write ."
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "@typescript-eslint/eslint-plugin": "^6.0.0",
+    "@typescript-eslint/parser": "^6.0.0",
+    "eslint": "^8.0.0",
+    "eslint-config-prettier": "^9.0.0",
+    "eslint-plugin-react": "^7.33.0",
+    "eslint-plugin-react-hooks": "^4.6.0",
+    "prettier": "^3.0.0",
+    "typescript": "^5.0.0"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=9.0.0"
+  }
+}

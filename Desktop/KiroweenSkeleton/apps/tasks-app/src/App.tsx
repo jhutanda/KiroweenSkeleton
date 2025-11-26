@@ -1,0 +1,115 @@
+import React, { useEffect } from 'react';
+import { Routes, Route, Navigate } from 'react-router-dom';
+import { useSelector, useDispatch } from 'react-redux';
+import { RootState } from './store';
+import { setTheme } from './store/slices/uiSlice';
+import { setUser, clearUser } from './store/slices/authSlice';
+import { useAuth, useTheme } from '@shared/hooks';
+import { tasksApi } from './store/api/tasksApi';
+
+// Components
+import Layout from './components/Layout/Layout';
+import LoginPage from './pages/LoginPage';
+import TasksPageSimple from './pages/TasksPageSimple';
+import ProtectedRoute from './components/Auth/ProtectedRoute';
+
+const App: React.FC = () => {
+  const dispatch = useDispatch();
+  const { theme } = useSelector((state: RootState) => state.ui);
+  const { isAuthenticated, isLoading } = useSelector((state: RootState) => state.auth);
+  
+  const { user, login, logout, checkAuthState } = useAuth();
+  const { theme: systemTheme, toggleTheme } = useTheme();
+
+  // Initialize auth state
+  useEffect(() => {
+    checkAuthState();
+  }, [checkAuthState]);
+
+  // Sync auth state with Redux
+  useEffect(() => {
+    if (user) {
+      dispatch(setUser(user));
+    } else {
+      dispatch(clearUser());
+    }
+  }, [user, dispatch]);
+
+  // Sync theme with Redux and system
+  useEffect(() => {
+    dispatch(setTheme(systemTheme));
+  }, [systemTheme, dispatch]);
+
+  // Apply theme to document
+  useEffect(() => {
+    if (theme === 'dark') {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+  }, [theme]);
+
+  // Listen for storage changes from notes-app (cross-tab/cross-port communication)
+  useEffect(() => {
+    const handleStorageChange = (e: StorageEvent) => {
+      // When tasks are added from notes-app, refresh the tasks list
+      if (e.key === 'kiroween_tasks' || e.key === null) {
+        dispatch(tasksApi.util.invalidateTags(['Task']));
+      }
+    };
+
+    // Also listen for custom storage events (for same-origin updates)
+    const handleCustomStorageEvent = () => {
+      dispatch(tasksApi.util.invalidateTags(['Task']));
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+    window.addEventListener('storage', handleCustomStorageEvent);
+
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+      window.removeEventListener('storage', handleCustomStorageEvent);
+    };
+  }, [dispatch]);
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+      <Routes>
+        <Route 
+          path="/login" 
+          element={
+            isAuthenticated ? (
+              <Navigate to="/tasks" replace />
+            ) : (
+              <LoginPage />
+            )
+          } 
+        />
+        
+        <Route
+          path="/"
+          element={
+            <ProtectedRoute>
+              <Layout />
+            </ProtectedRoute>
+          }
+        >
+          <Route index element={<Navigate to="/tasks" replace />} />
+          <Route path="tasks" element={<TasksPageSimple />} />
+        </Route>
+        
+        <Route path="*" element={<Navigate to="/tasks" replace />} />
+      </Routes>
+    </div>
+  );
+};
+
+export default App;

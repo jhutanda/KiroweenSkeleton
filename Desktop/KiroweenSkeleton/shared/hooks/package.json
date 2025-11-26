@@ -1,0 +1,20 @@
+{
+  "name": "@shared/hooks",
+  "version": "1.0.0",
+  "type": "module",
+  "main": "./index.ts",
+  "types": "./index.ts",
+  "exports": {
+    ".": "./index.ts"
+  },
+  "dependencies": {
+    "react": "^18.2.0",
+    "@aws-amplify/auth": "^6.0.0",
+    "@reduxjs/toolkit": "^1.9.0",
+    "react-redux": "^8.1.0"
+  },
+  "devDependencies": {
+    "@types/react": "^18.2.0",
+    "typescript": "^5.0.0"
+  }
+}
