@@ -1,8 +1,8 @@
 {
-  "buildCommand": "cd apps/notes-app && npm install && npm run build",
+  "buildCommand": "npm install --workspaces && cd apps/notes-app && npm run build",
   "outputDirectory": "apps/notes-app/dist",
-  "installCommand": "npm install",
-  "framework": "vite",
+  "installCommand": "npm install --workspaces --legacy-peer-deps",
+  "framework": null,
   "rewrites": [
     {
       "source": "/(.*)",
