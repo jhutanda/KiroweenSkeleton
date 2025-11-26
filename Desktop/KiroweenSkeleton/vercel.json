@@ -1,0 +1,12 @@
+{
+  "buildCommand": "cd apps/notes-app && npm install && npm run build",
+  "outputDirectory": "apps/notes-app/dist",
+  "installCommand": "npm install",
+  "framework": "vite",
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
+  ]
+}
