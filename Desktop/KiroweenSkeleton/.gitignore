@@ -7,6 +7,9 @@ dist/
 build/
 *.local
 
+# Gradle
+.gradle/
+
 # Environment variables
 .env
 .env.local
